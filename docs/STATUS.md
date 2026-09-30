@@ -9,14 +9,15 @@ state.
 The landing page is built, responsive and production-ready apart from the
 pending items below. `pnpm check`, `pnpm typecheck` and `pnpm build` all pass.
 
-**Nothing is committed yet.** The repo has `git init` and no commits. The owner
-has not asked for a commit; ask before creating one. Do not commit on `main`
-without being told to.
+**Git.** Remote `origin` is
+`https://github.com/harrihari/signet-industrial-robotics-website`. `main` is
+this codebase; `legacy-site` keeps the team's previous Vite site. Ask before
+committing or pushing.
 
 ### History, in order
 
-1. Scaffolded from `create-vinext-app`, restructured to `src/` following the
-   `titus` project.
+1. Scaffolded from `create-vinext-app` (vinext on Cloudflare Workers),
+   restructured to `src/` following the `titus` project.
 2. Built as a layout study of a portfolio site, then reworked into the Signum
    Industrial AI site using the copy, palette, wordmark, favicon and three
    images from the team's existing site
@@ -30,8 +31,14 @@ without being told to.
 5. Performance refactor: sections became server components, scroll effects moved
    to CSS scroll-driven animations, motion reduced to interactive islands via
    `LazyMotion`.
+6. Converted from vinext + Cloudflare Workers to plain Next.js for Vercel.
+   `src/proxy.ts`, `vite.config.ts`, `cloudflare.config.ts` and
+   `public/_headers` were removed; all headers now live in `next.config.ts`.
+7. Vercel hardening: removed the `/api/hello` scaffold route so every route is
+   static (no serverless functions), pinned `packageManager` and
+   `engines.node`, and scoped a Vercel toolbar CSP exception to previews.
 
-### Lighthouse (production build, through `pnpm lighthouse:proxy`)
+### Lighthouse (measured on the vinext build; re-measure on Next.js)
 
 | | Performance | Accessibility | Best Practices | SEO |
 | --- | --- | --- | --- | --- |
@@ -40,7 +47,7 @@ without being told to.
 
 Mobile performance will not reach 100 on this stack. A bare page with only a
 heading scores 96 to 97, because Lighthouse's simulated slow 4G counts the
-React and vinext runtime against the first large paint. The remaining gap on
+React and framework runtime against the first large paint. The remaining gap on
 the home page is mostly the framework's hydration payload in the HTML (about
 170 KB uncompressed, 18 KB compressed). The real first paint is about 0.24s.
 Do not spend more time chasing 100 unless the owner asks; they have been told
@@ -62,19 +69,23 @@ pnpm dlx lighthouse@12 http://localhost:4174 --preset=desktop --chrome-flags="--
    workflow are in `docs/image-prompts.md`; slots are marked `TODO` in
    `src/config/images.ts`. The owner generates the images; wiring them in is:
    drop into `public/images/src/`, run `pnpm images`, update `images.ts`.
-2. **Deploy and domain.** Not deployed yet. `pnpm deploy` publishes the Worker.
-   The custom domain `signumindustrial.ai` still has to be attached to the
-   Worker in Cloudflare (dashboard or `cloudflare.config.ts` routes). After the
-   first deploy, confirm the CSP header is present on `/` and that
-   `/robots.txt`, `/sitemap.xml`, `/manifest.webmanifest` and `/og.jpg` resolve.
-3. **Initial commit**, when the owner asks for it.
-4. **Owner checks still open**
+2. **Deploy and domain.** Not deployed yet. In Vercel: import the GitHub repo
+   (framework preset Next.js, no build overrides), then add these environment
+   variables for all environments:
+   - `NEXT_PUBLIC_SITE_URL=https://signumindustrial.ai`
+   - `ENABLE_EXPERIMENTAL_COREPACK=1` (makes Vercel use the exact pnpm in
+     `packageManager` instead of guessing from the lockfile)
+
+   Add `signumindustrial.ai` (and `www`, redirecting to the apex) under
+   Domains. After the first deploy, confirm the CSP header is present on `/`
+   and that `/robots.txt`, `/sitemap.xml`, `/manifest.webmanifest` and
+   `/og.jpg` resolve.
+3. **Owner checks still open**
    - Confirm the hero "glitch" is gone on their machine (three causes were
      removed; it could not be reproduced here).
    - Hard-reload if an old tab still shows a dash in the page title.
-5. **Nice to have, not requested**
+4. **Nice to have, not requested**
    - Apple touch icon / PNG icons for the manifest (only `favicon.svg` exists).
-   - Replace `src/app/api/hello` (scaffold leftover) or remove it.
    - A contact form instead of `mailto:` links.
    - Firefox: scroll-driven animations are not supported yet, so it shows the
      static state; revisit when Firefox ships `animation-timeline`.
@@ -89,10 +100,10 @@ pnpm dlx lighthouse@12 http://localhost:4174 --preset=desktop --chrome-flags="--
   assumptions.
 - Asks for a zip of the project without `node_modules` after milestones. Build
   it from the parent folder with:
-  `tar.exe -a -c -f signum.zip --exclude=node_modules --exclude=.cloudflare --exclude=.vinext --exclude=dist --exclude=.git --exclude=.next --exclude=*.tsbuildinfo signum`
+  `tar.exe -a -c -f signum.zip --exclude=node_modules --exclude=.vercel --exclude=.git --exclude=.next --exclude=*.tsbuildinfo signum`
 
 ## Known local state
 
-- The owner often has their own `pnpm dev` running on port 5173. vinext allows
-  one dev server per project, so use `pnpm start` (4173) for checks and do not
+- The owner often has their own `pnpm dev` running on port 5173. Next allows
+  one dev server per project directory, so use `pnpm start` (4173) for checks and do not
   kill their process without asking.

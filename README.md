@@ -1,8 +1,8 @@
 # Signum Industrial AI
 
 Marketing site for Signum Industrial AI, served at
-[signumindustrial.ai](https://signumindustrial.ai). Built with vinext (the
-Next.js App Router API on Vite) and deployed to Cloudflare Workers.
+[signumindustrial.ai](https://signumindustrial.ai). Built with Next.js (App Router)
+and deployed to Vercel.
 
 ## Getting started
 
@@ -16,9 +16,8 @@ pnpm dev        # http://localhost:5173
 | Command | What it does |
 | --- | --- |
 | `pnpm dev` | Start the dev server |
-| `pnpm build` | Production build (Cloudflare Worker output) |
+| `pnpm build` | Production build (`.next/`) |
 | `pnpm start` | Serve the production build locally on port 4173 |
-| `pnpm deploy` | Deploy the Worker to Cloudflare |
 | `pnpm check` / `pnpm check:write` | Biome lint and format (check / fix) |
 | `pnpm typecheck` | TypeScript check |
 | `pnpm images` | Regenerate responsive image variants and `public/og.jpg` |

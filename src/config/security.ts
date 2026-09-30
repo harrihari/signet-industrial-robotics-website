@@ -5,16 +5,24 @@
  * (a per-request nonce isn't possible for prerendered HTML) and the JSON-LD
  * block; styles need it for motion's inline transform styles.
  *
- * Only applied in production: the Vite dev server relies on eval-based HMR,
+ * Only applied in production: the dev server relies on eval-based HMR,
  * which this policy would (correctly) block.
+ *
+ * Vercel preview deployments inject the Vercel toolbar (comments, feedback),
+ * so previews also allow the origins it loads from. Production stays strict.
  */
+const vercelToolbar = process.env.VERCEL_ENV === "preview";
+const allow = (...sources: string[]) =>
+	vercelToolbar ? ` ${sources.join(" ")}` : "";
+
 const contentSecurityPolicy = [
 	"default-src 'self'",
-	"script-src 'self' 'unsafe-inline'",
-	"style-src 'self' 'unsafe-inline'",
-	"img-src 'self' data: blob:",
-	"font-src 'self'",
-	"connect-src 'self'",
+	`script-src 'self' 'unsafe-inline'${allow("https://vercel.live")}`,
+	`style-src 'self' 'unsafe-inline'${allow("https://vercel.live")}`,
+	`img-src 'self' data: blob:${allow("https://vercel.live", "https://vercel.com")}`,
+	`font-src 'self'${allow("https://vercel.live", "https://assets.vercel.com")}`,
+	`connect-src 'self'${allow("https://vercel.live", "wss://ws-us3.pusher.com")}`,
+	`frame-src 'self'${allow("https://vercel.live")}`,
 	"media-src 'self'",
 	"object-src 'none'",
 	"base-uri 'self'",

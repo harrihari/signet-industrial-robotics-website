@@ -11,7 +11,7 @@ robotics, AI-native platforms). Single landing page, statically prerendered.
 
 - Production domain: **signumindustrial.ai** (`siteConfig.domain` in
   `src/config/site.ts`; override the origin with `NEXT_PUBLIC_SITE_URL`).
-- Stack: **vinext** (Next.js App Router API on Vite) on **Cloudflare Workers**,
+- Stack: **Next.js 16** (App Router) on **Vercel**,
   React 19, TypeScript, Tailwind CSS 4, motion (motion.dev), Lenis, Hugeicons,
   Biome. Package manager: **pnpm**.
 - The owner's other project `C:\Users\hydra\Developer\personal\titus` is the
@@ -20,10 +20,9 @@ robotics, AI-native platforms). Single landing page, statically prerendered.
 ## Commands
 
 ```bash
-pnpm dev               # vinext dev server (Vite), port 5173
-pnpm build             # production build into .cloudflare/
-pnpm start             # serve the production build (vite preview), port 4173
-pnpm deploy            # deploy the Worker to Cloudflare
+pnpm dev               # Next dev server, port 5173
+pnpm build             # production build into .next/
+pnpm start             # serve the production build (next start), port 4173
 pnpm check             # Biome lint + format check
 pnpm check:write       # Biome with auto-fix (run before finishing any change)
 pnpm typecheck         # tsc --noEmit
@@ -38,14 +37,13 @@ There is no test suite.
 
 ```
 src/
-  app/            layout.tsx, page.tsx, robots.ts, sitemap.ts, manifest.ts, api/hello
-  proxy.ts        middleware (Next 16 "proxy" convention): security headers + CSP
+  app/            layout.tsx, page.tsx, robots.ts, sitemap.ts, manifest.ts
   config/         ALL content and settings (edit copy here, not in components)
     site.ts         name, domain, title, contact, nav links
     content.ts      section copy (about, services intro, metrology, experience, delivery, contact)
     services.ts     pillars (3 cards) and capabilities (5 rows)
     images.ts       every image slot -> { src, srcSet, width, height }
-    security.ts     CSP and security headers (shared by proxy.ts and next.config.ts)
+    security.ts     CSP and security headers (applied in next.config.ts)
   components/
     layout/         header.tsx (client), footer.tsx (server)
     sections/       landing.tsx composes the page; home/* is one file per section
@@ -56,7 +54,7 @@ src/
   types/          shared types
 scripts/          optimize-images.mjs, br-proxy.mjs
 docs/             STATUS.md (handoff), image-prompts.md (prompts for pending images)
-public/           favicon.svg, og.jpg, _headers, flags/, images/ (variants), images/src/ (sources)
+public/           favicon.svg, og.jpg, flags/, images/ (variants), images/src/ (sources)
 ```
 
 Page order (`sections/landing.tsx`): Header, Hero, Intro, Pillars (sideways card
@@ -129,11 +127,15 @@ add `"use client"` to a section; extract a small client island instead.
 ## Security headers and CSP
 
 `src/config/security.ts` defines a strict CSP with **no `unsafe-eval`**. It is
-applied in production only (the Vite dev server needs eval for HMR):
-- `src/proxy.ts` sets the headers on page responses (prerendered pages ignore
-  `next.config` headers).
-- `next.config.ts` `headers()` covers dynamic routes (robots, sitemap, manifest, API).
-- `public/_headers` sets long-lived caching for static assets on Cloudflare.
+applied in production only (the dev server needs eval for HMR) via
+`next.config.ts` `headers()`, which also covers prerendered pages and sets
+long-lived `Cache-Control` for `/images/*` and `/flags/*`. There is no
+middleware on purpose: it would add a function invocation to every request on
+Vercel.
+
+Preview deployments (`VERCEL_ENV=preview`) also allow the Vercel toolbar's
+origins (`vercel.live`, `vercel.com`, `assets.vercel.com`, Pusher websocket);
+production builds do not.
 
 `script-src` and `style-src` need `'unsafe-inline'` (framework bootstrap scripts,
 JSON-LD, motion inline styles). Never add `eval`/`new Function` or a dependency
@@ -141,15 +143,15 @@ that needs them.
 
 ## Gotchas
 
-- **One dev server per project.** vinext refuses to start a second `pnpm dev`.
+- **One dev server per project.** Next refuses to start a second `pnpm dev`.
   If port 5173 is taken, it is probably the owner's own server; do not kill it
   without asking. Use `pnpm start` on 4173 to check
   production output.
-- **`pnpm build` hangs while `pnpm start` is running** (the preview holds
-  `.cloudflare/`). Stop the preview server, build, then start it again.
-- `vite preview` does not compress responses. For Lighthouse, run
-  `pnpm lighthouse:proxy` and audit `http://localhost:4174`; otherwise mobile
-  performance reads about 20 points too low.
+- **Stop `pnpm start` before `pnpm build`** (both use `.next/`), then start it
+  again.
+- `next start` only gzips; Vercel's edge serves Brotli. For Lighthouse, run
+  `pnpm lighthouse:proxy` and audit `http://localhost:4174` so results match
+  production more closely.
 - The CSP includes `upgrade-insecure-requests`, so `fetch()` from the page on
   plain-http `localhost:4173` fails. Check headers with `curl` instead.
 - Screenshots and `requestAnimationFrame` stall when the browser pane is hidden;

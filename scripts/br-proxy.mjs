@@ -1,5 +1,5 @@
 // Brotli-compressing reverse proxy: localhost:4174 -> localhost:4173.
-// Mimics Cloudflare's edge compression so local Lighthouse runs are realistic.
+// Mimics Vercel's edge compression so local Lighthouse runs are realistic.
 import http from "node:http";
 import zlib from "node:zlib";
 

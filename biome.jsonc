@@ -18,9 +18,7 @@
 			"!.vercelignore",
 			"!**/prisma/generated",
 			"!**/coverage",
-			"!public",
-			"!**/.vinext",
-			"!**/.cloudflare"
+			"!public"
 		]
 	},
 	"formatter": {
