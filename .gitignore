@@ -5,9 +5,9 @@ node_modules
 next-env.d.ts
 /dist/
 *.tsbuildinfo
-.vercel
+.vinext/
+.cloudflare/
 
 # Local agent config
 CLAUDE.md
 .claude/
-.cloudflare/

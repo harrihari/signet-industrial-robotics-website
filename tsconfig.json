@@ -14,7 +14,7 @@
 		"isolatedModules": true,
 		"jsx": "react-jsx",
 		"incremental": true,
-		"types": ["node"],
+		"types": ["vinext/types", "node"],
 		"paths": {
 			"@/*": ["./src/*"]
 		},
@@ -30,6 +30,7 @@
 		"**/*.ts",
 		"**/*.tsx",
 		".next/types/**/*.ts",
+		".cloudflare/types",
 		".next/dev/types/**/*.ts"
 	],
 	"exclude": ["node_modules"]

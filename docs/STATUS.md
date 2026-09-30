@@ -15,8 +15,8 @@ without being told to.
 
 ### History, in order
 
-1. Scaffolded from `create-vinext-app` (vinext on Cloudflare Workers),
-   restructured to `src/` following the `titus` project.
+1. Scaffolded from `create-vinext-app`, restructured to `src/` following the
+   `titus` project.
 2. Built as a layout study of a portfolio site, then reworked into the Signum
    Industrial AI site using the copy, palette, wordmark, favicon and three
    images from the team's existing site
@@ -30,11 +30,8 @@ without being told to.
 5. Performance refactor: sections became server components, scroll effects moved
    to CSS scroll-driven animations, motion reduced to interactive islands via
    `LazyMotion`.
-6. Converted from vinext + Cloudflare Workers to plain Next.js for Vercel.
-   `src/proxy.ts`, `vite.config.ts`, `cloudflare.config.ts` and
-   `public/_headers` were removed; all headers now live in `next.config.ts`.
 
-### Lighthouse (measured on the vinext build; re-measure on Next.js)
+### Lighthouse (production build, through `pnpm lighthouse:proxy`)
 
 | | Performance | Accessibility | Best Practices | SEO |
 | --- | --- | --- | --- | --- |
@@ -43,7 +40,7 @@ without being told to.
 
 Mobile performance will not reach 100 on this stack. A bare page with only a
 heading scores 96 to 97, because Lighthouse's simulated slow 4G counts the
-React and framework runtime against the first large paint. The remaining gap on
+React and vinext runtime against the first large paint. The remaining gap on
 the home page is mostly the framework's hydration payload in the HTML (about
 170 KB uncompressed, 18 KB compressed). The real first paint is about 0.24s.
 Do not spend more time chasing 100 unless the owner asks; they have been told
@@ -65,10 +62,10 @@ pnpm dlx lighthouse@12 http://localhost:4174 --preset=desktop --chrome-flags="--
    workflow are in `docs/image-prompts.md`; slots are marked `TODO` in
    `src/config/images.ts`. The owner generates the images; wiring them in is:
    drop into `public/images/src/`, run `pnpm images`, update `images.ts`.
-2. **Deploy and domain.** Not deployed yet. Import the project in Vercel
-   (framework preset Next.js; pnpm is detected from the lockfile), set
-   `NEXT_PUBLIC_SITE_URL=https://signumindustrial.ai`, and add the domain in
-   the project's domain settings. After the first deploy, confirm the CSP header is present on `/` and that
+2. **Deploy and domain.** Not deployed yet. `pnpm deploy` publishes the Worker.
+   The custom domain `signumindustrial.ai` still has to be attached to the
+   Worker in Cloudflare (dashboard or `cloudflare.config.ts` routes). After the
+   first deploy, confirm the CSP header is present on `/` and that
    `/robots.txt`, `/sitemap.xml`, `/manifest.webmanifest` and `/og.jpg` resolve.
 3. **Initial commit**, when the owner asks for it.
 4. **Owner checks still open**
@@ -92,10 +89,10 @@ pnpm dlx lighthouse@12 http://localhost:4174 --preset=desktop --chrome-flags="--
   assumptions.
 - Asks for a zip of the project without `node_modules` after milestones. Build
   it from the parent folder with:
-  `tar.exe -a -c -f signum.zip --exclude=node_modules --exclude=.vercel --exclude=.git --exclude=.next --exclude=*.tsbuildinfo signum`
+  `tar.exe -a -c -f signum.zip --exclude=node_modules --exclude=.cloudflare --exclude=.vinext --exclude=dist --exclude=.git --exclude=.next --exclude=*.tsbuildinfo signum`
 
 ## Known local state
 
-- The owner often has their own `pnpm dev` running on port 5173. Next allows
-  one dev server per project directory, so use `pnpm start` (4173) for checks and do not
+- The owner often has their own `pnpm dev` running on port 5173. vinext allows
+  one dev server per project, so use `pnpm start` (4173) for checks and do not
   kill their process without asking.
