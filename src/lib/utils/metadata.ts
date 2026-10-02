@@ -16,6 +16,8 @@ export const keywords = [
 	"offshore services Houston",
 	"subsea services Ghana",
 	"subsea services Angola",
+	"subsea services Senegal",
+	"subsea services Guyana",
 ];
 
 export function constructMetadata(): Metadata {

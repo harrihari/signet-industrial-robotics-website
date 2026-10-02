@@ -10,7 +10,7 @@ export const siteConfig: SiteConfig = {
 	eyebrow: "Engineering. Operations. Technology.",
 	intro:
 		"Subsea services, robotics, and AI-native platforms. Connected to support your assets and operations.",
-	regions: ["United States", "Ghana", "Angola"],
+	regions: ["United States", "Ghana", "Angola", "Senegal", "Guyana"],
 	domain: "signumindustrial.ai",
 	mail: "info@signumindustrial.ai",
 	address: ["11050 W Little York Rd, Bldg. P", "Houston, TX 77041, USA"],

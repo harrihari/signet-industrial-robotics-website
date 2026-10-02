@@ -54,7 +54,6 @@ export type Step = {
 
 export type Location = {
 	id: string;
-	kind: string;
 	country: string;
 	detail: string;
 	flag: Picture;

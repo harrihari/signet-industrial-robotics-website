@@ -86,24 +86,33 @@ export const delivery = {
 	locations: [
 		{
 			id: "01",
-			kind: "Base",
 			country: "United States",
 			detail: "Houston, Texas",
 			flag: ImagesConfig.flags.us,
 		},
 		{
 			id: "02",
-			kind: "Personnel",
 			country: "Ghana",
 			detail: "Field and specialist support",
 			flag: ImagesConfig.flags.gh,
 		},
 		{
 			id: "03",
-			kind: "Personnel",
 			country: "Angola",
 			detail: "Field and specialist support",
 			flag: ImagesConfig.flags.ao,
+		},
+		{
+			id: "04",
+			country: "Senegal",
+			detail: "Field and specialist support",
+			flag: ImagesConfig.flags.sn,
+		},
+		{
+			id: "05",
+			country: "Guyana",
+			detail: "Field and specialist support",
+			flag: ImagesConfig.flags.gy,
 		},
 	] satisfies Location[],
 };

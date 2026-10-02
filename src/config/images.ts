@@ -63,5 +63,7 @@ export const ImagesConfig = {
 		us: { src: "/flags/us.svg", width: 1235, height: 650 },
 		gh: { src: "/flags/gh.svg", width: 900, height: 600 },
 		ao: { src: "/flags/ao.svg", width: 900, height: 600 },
+		sn: { src: "/flags/sn.svg", width: 900, height: 600 },
+		gy: { src: "/flags/gy.svg", width: 1000, height: 600 },
 	},
 } satisfies Record<string, unknown>;
